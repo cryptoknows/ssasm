@@ -54,7 +54,7 @@
 ##
 ##
 
-VERSION=1.0.0
+VERSION=1.1.0
 CTR=1
 INTERNAL_PATH=`dirname $0`
 
@@ -123,6 +123,7 @@ cat /tmp/rrrun.txt | while read LINE
 do
 	echo "### PROCESSING: $LINE"
 	echo "set echo off" >>$OFILE
+	echo " ">>$OFILE
 	cat ${INTERNAL_PATH}/ssasm-header.txt >>$OFILE
 	echo "spool /tmp/ss_${SCHEMA}${CTR}.txt">>$OFILE
 	CTR=$(($CTR+1))
@@ -138,6 +139,7 @@ do
 	echo "set echo on" >>$OFILE
 	## When catting file, make sure to get rid of DOS \r's along the way
 	cat $LINE | tr -d '\r' >>$OFILE
+	echo " ">>$OFILE
 	cat ${INTERNAL_PATH}/ssasm-footer.txt >>$OFILE
 done
 	echo "prompt  ">>$OFILE

@@ -1,6 +1,8 @@
 ## ---------------------------------------------------------------------------------------------------------------------
 ## SSAsm Version History:
 ##
-## 1.0.0                Roby Sherman                    -- Initial release!!
+## 1.0.0                Roby Sherman	06/02/2015      -- Initial release!!
+## 1.1.0                Roby Sherman    06/02/2016      -- ssasm now adds a c/r to header and footer inclusion to ensure
+##							-- lines aren't combined in assembly 
 ##
 ## ---------------------------------------------------------------------------------------------------------------------
