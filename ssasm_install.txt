@@ -1,0 +1,16 @@
+To install SSAsm, simply copy/move the ssasm DIRECTORY (including ssasm, ssasm_footer.txt, ssasm_header.txt, etc.) to 
+any safe location you have access to ($HOME/bin, /usr/local/bin, etc.)
+then, simply add the ssasm directory to your PATH and you're ready.
+
+---
+EXAMPLE INSTALLING SSASM IN $HOME/BIN (assuming bash is your default shell):
+
+linux% mv ssasm $HOME/bin/
+linux% echo 'export PATH=$PATH:$HOME/bin/ssasm' >>$HOME/.bash_profile
+
+---
+EXAMPLE INSTALLING SSASM IN /usr/local/bin (assuming you are root and you mostly use bash)):
+
+linux% mv ssasm /usr/local/bin/
+linux% echo 'export PATH=$PATH:/usr/local/bin/ssasm' >>/etc/profile
+

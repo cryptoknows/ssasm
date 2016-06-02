@@ -1,0 +1,4 @@
+spool off
+set echo off
+prompt -- READY TO CONTINUE? PRESS ENTER TO PROCEED TO THE NEXT SECTION
+accept abc

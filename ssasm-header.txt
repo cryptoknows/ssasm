@@ -1,0 +1,25 @@
+set echo off 
+!tput clear 
+prompt  
+prompt
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt  
+prompt
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
