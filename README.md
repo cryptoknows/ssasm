@@ -10,7 +10,7 @@ The SQL Script Assembler (SSAsm) is designed to streamline a number of activitie
  
 * Individualized Logging -- SSAsm individually spools the output of each .sql script/fragment (in /tmp/ss_{SCHEMA_NAME}{N}.txt) and includes the name of the original file it was sourced from. These files can then be used for validation, comparison to the original fragments, auditing purposes, etc.
 
-* Supporting Automatic Review Points - By default, SSAsm includes pause points after each .sql "fragment" executes so the developer / DBA can review the execution (either in the scrollback or the log files) to make any necessary corrections or mitigate any issues before continuing. These review points can be modified / removed by editing the included ssasm_footer.txt file.
+* Supporting Automatic Review Points - (For Oracle) By default, SSAsm includes pause points after each .sql "fragment" executes so the developer / DBA can review the execution (either in the scrollback or the log files) to make any necessary corrections or mitigate any issues before continuing. These review points can be modified / removed to support non-Oracle databases by editing the included ssasm_footer.txt file.
 
 ---
 
