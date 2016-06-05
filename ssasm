@@ -12,11 +12,22 @@
 ##
 ## ---------------------------------------------------------------------------------------------------------------------
 ##
-## Usage Examples:
 ##
-## ssasm
-## ssasm /path/to/source/directories
-
+## Synopsis:
+##
+## ssasm [-d database_type] [-s schema_name] [-f file_type] path
+##
+##
+## Options:
+##
+## -d	- database_type - The DB / client platform the assembled script will be executed against. Accepted values:
+##  			  oracle (default), mysql
+##
+## -s 	- schema_name	- The name of schema (embedded in the folder names) to process. Case sensitive
+##
+## -f	- file_type	- The file type (suffix) to assemble (default is ".sql" (minus the quotes)). Case insensitive
+##
+## ---------------------------------------------------------------------------------------------------------------------
 ##
 ## SSAsm assumes that all changes are organized in directories with the following format:
 ##
@@ -28,6 +39,7 @@
 ## 2016-01-05-MY_SCHEMA-Modified_Version 	-- Comments added
 ##
 ## NOTES:
+##
 ## * SSAsm will assemble scripts by folder date and then by alphanumeric sort order of each script *within* the folder
 ## * SSAsm will *ignore* any directories / scripts placed within a "Rejected" folder (case sensitive)
 ##
@@ -54,9 +66,39 @@
 ##
 ##
 
-VERSION=1.1.0
+VERSION=2.0.0
 CTR=1
 INTERNAL_PATH=`dirname $0`
+DATABASE="oracle"
+FTYPE=""
+ 
+while getopts "d:s:f:" opt; do
+  case $opt in
+    s) SCHEMA=$OPTARG
+ 	;; 
+    f) FTYPE=$OPTARG
+ 	;; 
+    d)
+      if [ "$OPTARG" != "oracle" ] && [ "$OPTARG" != "mysql" ]
+      then
+	echo "Sorry, '${OPTARG}' isn't a recognized database target!"
+	exit 1
+      else 
+	DATABASE=$OPTARG
+      fi	
+	;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
 
 if [ "$1" ] 
 then
@@ -73,22 +115,38 @@ echo "SQL Script Assembler (SSAsm) ${VERSION}"
 echo ""
 echo "This is a copyrighted utility, distributed under GPL v2 license."
 echo "Refer to the SSAsm source directory for more information."
-echo ""
-echo ""
-echo ""
-echo -n ">>Enter a schema name to build: "
-read SCHEMA
-if [ ! ${SCHEMA} ]
+echo
+if [ ${SCHEMA} ]
 then
-	echo "*** ERROR! *** You must provide a schema name!"
-	exit
+	echo "Schema Specified: 	'${SCHEMA}'"
+else
+	echo -n ">>Enter a schema name to build: "
+	read SCHEMA
+	if [ ! ${SCHEMA} ]
+	then
+		echo "*** ERROR! *** You must provide a schema name!"
+		exit
+	fi
+	echo
+	echo
 fi
-echo -n ">>Enter a filetype to integrate (case insensitive): [.sql]: "
-read FTYPE
-if [ ! ${FTYPE} ]
+
+
+echo "Target DB Platform: 	'${DATABASE}'"
+if [ ${FTYPE} ] 
 then
-	FTYPE=".sql"
+	echo "Filetype Specified:	'${FTYPE}'"
+else
+	echo; echo; echo;
+	echo -n ">>Enter a filetype to integrate (case insensitive): [.sql]: "
+	read FTYPE
+	if [ ! ${FTYPE} ]
+	then
+        	FTYPE=".sql"
+	fi
+	echo; echo;
 fi
+echo "Path to Process:	'${SOURCE_DIR}'"
 echo ""
 echo ""
 OFILE="build_${SCHEMA}${FTYPE}"
@@ -109,45 +167,108 @@ then
 	echo "-- Get your copy today at https://github.com/cryptoknows/ssasm" >>$OFILE
 	echo "--">>$OFILE
 	echo "--">>$OFILE
-	echo "set pagesize 1000" >>$OFILE
-	echo "set linesize 132" >>$OFILE
-	echo "set echo off" >>$OFILE
-	echo "prompt" >>$OFILE
-	echo "prompt" >>$OFILE
-	echo "prompt PRESS ENTER TO BEGIN THE $SCHEMA SCRIPT SCRIPT EXECUTION">>$OFILE
-	echo "accept abc">>$OFILE
+
+	case ${DATABASE} in
+                oracle)
+			echo "prompt" >>$OFILE
+			echo "prompt" >>$OFILE
+			echo "prompt PRESS ENTER TO BEGIN THE $SCHEMA SCRIPT SCRIPT EXECUTION">>$OFILE
+			echo "accept abc">>$OFILE
+		;;
+                mysql)
+			echo "\! echo" >>$OFILE
+			echo "\! echo" >>$OFILE
+			echo "\! echo 'PRESS ENTER TO BEGIN THE $SCHEMA SCRIPT SCRIPT EXECUTION'">>$OFILE
+			echo "\! read abc">>$OFILE
+                ;;
+        esac
+	
 
 find $SOURCE_DIR -name "Rejected" -prune -o -print | grep "\-${SCHEMA}\-" | grep -i ${FTYPE} >/tmp/rrrun.txt
 DONE="no"
 cat /tmp/rrrun.txt | while read LINE
 do
 	echo "### PROCESSING: $LINE"
-	echo "set echo off" >>$OFILE
-	echo " ">>$OFILE
-	cat ${INTERNAL_PATH}/ssasm-header.txt >>$OFILE
-	echo "spool /tmp/ss_${SCHEMA}${CTR}.txt">>$OFILE
+	case ${DATABASE} in
+		oracle)
+			echo "set echo off" >>$OFILE
+			echo " ">>$OFILE
+		;;
+	esac
+
+	cat ${INTERNAL_PATH}/ssasm-header-${DATABASE}.txt >>$OFILE
+	case ${DATABASE} in
+		oracle)
+			echo "spool /tmp/ss_${SCHEMA}${CTR}.txt">>$OFILE
+		;;
+		mysql)
+			echo "tee /tmp/ss_${SCHEMA}${CTR}.txt">>$OFILE
+		;;
+	esac
 	CTR=$(($CTR+1))
-	echo "prompt ------------------------------------------------------------------------------------------" >>$OFILE
-	echo " ">>$OFILE
-	echo "prompt -- CONTENTS OF $LINE EXECUTING BELOW" >>$OFILE
-	echo " ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "set echo on" >>$OFILE
+	
+	case ${DATABASE} in
+                oracle)
+			echo "prompt ------------------------------------------------------------------------------------------" >>$OFILE
+			echo " ">>$OFILE
+			echo "prompt -- CONTENTS OF $LINE EXECUTING BELOW" >>$OFILE
+			echo " ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "set echo on" >>$OFILE
+                ;;
+                mysql)
+			echo "\! echo ' ------------------------------------------------------------------------------------------'" >>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo 'CONTENTS OF $LINE EXECUTING BELOW'" >>$OFILE
+			echo " ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+		;;
+        esac
+
 	## When catting file, make sure to get rid of DOS \r's along the way
 	cat $LINE | tr -d '\r' >>$OFILE
 	echo " ">>$OFILE
-	cat ${INTERNAL_PATH}/ssasm-footer.txt >>$OFILE
+
+	case ${DATABASE} in
+                oracle)
+                        echo "spool off">>$OFILE
+                ;;
+                mysql)
+                        echo "notee">>$OFILE
+                ;;
+        esac
+
+	cat ${INTERNAL_PATH}/ssasm-footer-${DATABASE}.txt >>$OFILE
 done
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt  ">>$OFILE
-	echo "prompt -- END OF RELEASE SCRIPT REACHED. CONGRATULATIONS!" >>$OFILE
+
+	        case ${DATABASE} in
+                oracle)
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt  ">>$OFILE
+			echo "prompt -- END OF RELEASE SCRIPT REACHED. CONGRATULATIONS!" >>$OFILE
+                ;;
+                mysql)
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo ">>$OFILE
+			echo "\! echo 'END OF RELEASE SCRIPT REACHED. CONGRATULATIONS!'" >>$OFILE
+                ;;
+        esac
+
+
 
 	echo ""	
 	echo "Script assembly complete. "

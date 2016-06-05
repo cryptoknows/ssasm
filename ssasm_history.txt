@@ -1,8 +1,9 @@
 ## ---------------------------------------------------------------------------------------------------------------------
 ## SSAsm Version History:
 ##
-## 1.0.0                Roby Sherman	06/02/2015      -- Initial release!!
-## 1.1.0                Roby Sherman    06/02/2016      -- ssasm now adds a c/r to header and footer inclusion to ensure
-##							-- lines aren't combined in assembly 
-##
+## 1.0.0                06/02/2015      -- Initial release!!
+## 1.l.0                06/02/2016      -- ssasm now adds a c/r to header and footer inclusion to ensure lines aren't 
+## 						combined in assembly 
+## 2.0.0		06/05/2016	-- Added support for MySQL but mostly on Linux (since cross-OS commands used for
+##						prompting don't exist on Windows
 ## ---------------------------------------------------------------------------------------------------------------------

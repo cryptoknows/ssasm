@@ -1,0 +1,24 @@
+!tput clear 
+prompt  
+prompt
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt  
+prompt
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
+prompt 
