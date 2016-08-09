@@ -152,7 +152,7 @@ echo ""
 OFILE="build_${SCHEMA}${FTYPE}"
 echo "### GENERATING THE MASTER BUILD SCRIPT \"${OFILE}\" FROM THE FOLLOWING FILES: "
 echo ""
-find $SOURCE_DIR -name "Rejected" -prune -o -print | grep "\-${SCHEMA}\-" | grep -i ${FTYPE} 
+find $SOURCE_DIR -name "Rejected" -prune -o -print | sort | grep "\-${SCHEMA}\-" | grep -i ${FTYPE} 
 echo ""
 echo ""
 echo -n ">>Proceed? [N]: "
@@ -184,7 +184,7 @@ then
         esac
 
 
-find $SOURCE_DIR -name "Rejected" -prune -o -print | grep "\-${SCHEMA}\-" | grep -i ${FTYPE} >/tmp/rrrun.txt
+find $SOURCE_DIR -name "Rejected" -prune -o -print | sort | grep "\-${SCHEMA}\-" | grep -i ${FTYPE} >/tmp/rrrun.txt
 DONE="no"
 cat /tmp/rrrun.txt | while read LINE
 do
@@ -273,4 +273,4 @@ done
         echo ""
         echo "Script assembly complete. "
         echo "Output saved to: `pwd`/${OFILE}"
-fi
+fi 
